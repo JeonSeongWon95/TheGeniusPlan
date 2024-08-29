@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "../Player/AAFPlayerState.h"
 #include "GeniusGameInstance.generated.h"
 
 USTRUCT(BlueprintType)
@@ -24,9 +23,21 @@ class THEGENIUSPLAN_API UGeniusGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
+
+	UGeniusGameInstance();
+
 	UPROPERTY()
 	ESelectedLand GI_SelectedLand;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Score")
 	TArray<FPlayerScoreData> SavedPlayerScores;
+
+	UPROPERTY()
+	uint8 Number;
+
+	UFUNCTION()
+	void SetWinnerPlayer();
+
+	UFUNCTION()
+	void PrintWinnerPlayer();
 };
