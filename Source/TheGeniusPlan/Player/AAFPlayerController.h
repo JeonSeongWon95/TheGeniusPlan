@@ -49,6 +49,19 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ResponseGameStateFunction();
 
+	UPROPERTY()
+	TSubclassOf<class UUserWidget> GameStartWidgetClass;
+
+	UPROPERTY()
+	TSubclassOf<class UUserWidget> GameEndWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<class UUserWidget> GameStartWidget;
+
+	UPROPERTY()
+	TObjectPtr<class UUserWidget> GameEndWidget;
+
+
 
 
 

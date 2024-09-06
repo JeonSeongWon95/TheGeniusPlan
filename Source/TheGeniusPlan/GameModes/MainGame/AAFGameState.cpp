@@ -25,23 +25,15 @@ void AAAFGameState::SetGameStep(EGameStep NewStep)
 	{
 	case EGameStep::None:
 		break;
-	case EGameStep::RoundStart:
 
+	case EGameStep::RoundStart:
 		break;
+
 	case EGameStep::RoundEnd:
 		RequestWinnerCheck();
-		RequestGameStepEnd();
-		//if(StageCount < 1)
-		//{
-		//	StageCount++;
-		//	RequestWinnerCheck();
-		//	RequestGameStepReset();
-		//}
-		//else
-		//{
-		//	RequestGameStepEnd();
-		//}
+		GetWorld()->GetTimerManager().SetTimer(GameModeSecondHandle, this, &AAAFGameState::RequestGameStepEnd, 10.f, false);
 		break;
+
 	case EGameStep::GameEnd:
 		break;
 	default:

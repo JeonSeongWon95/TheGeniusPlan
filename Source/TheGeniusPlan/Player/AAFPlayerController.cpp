@@ -18,8 +18,27 @@
 #include "TheGeniusPlan/Actor/AAFLandLoction.h"
 
 
+
 AAAFPlayerController::AAAFPlayerController()
 {
+	static ConstructorHelpers::FClassFinder<UUserWidget> CSWidget(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/SeongWon/WG_AAFStart.WG_AAFStart_C'"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> CEWidget(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/SeongWon/WG_AAFGameEnd.WG_AAFGameEnd_C'"));
+
+
+	if (CSWidget.Succeeded())
+	{
+		GameStartWidgetClass = CSWidget.Class;
+	}
+	if (CEWidget.Succeeded())
+	{
+		GameEndWidgetClass = CEWidget.Class;
+	}
+
+	//UPROPERTY()
+	//TObjectPtr<class UUserWidget> GameStartWidget;
+
+	//UPROPERTY()
+	//TObjectPtr<class UUserWidget> GameEndWidget;
 
 }
 
@@ -28,6 +47,31 @@ void AAAFPlayerController::BeginPlay()
 	Super::BeginPlay();
 	GameState = Cast<AAAFGameState>(GetWorld()->GetGameState());
 	BindDispatcher();
+
+	check(GameStartWidgetClass);
+	check(GameEndWidgetClass);
+
+	if (GameStartWidget == nullptr)
+	{
+		GameStartWidget = CreateWidget<UUserWidget>(GetWorld(), GameStartWidgetClass);
+		GameStartWidget->AddToViewport();
+	}
+	else
+	{
+		if (GameStartWidget->IsInViewport())
+		{
+
+		}
+		else
+		{
+			GameStartWidget->AddToViewport();
+		}
+	}
+
+	if (GameEndWidget == nullptr)
+	{
+		GameEndWidget = CreateWidget<UUserWidget>(GetWorld(), GameEndWidgetClass);
+	}
 }
 
 void AAAFPlayerController::GameStepChange(EGameStep NewStep)
@@ -41,9 +85,23 @@ void AAAFPlayerController::GameStepChange(EGameStep NewStep)
 		case EGameStep::SetLocation:
 			RequestGameStateFunction();
 			break;
+
 		case EGameStep::RoundStart:
+
+			if(GameStartWidget->IsInViewport())
+			{
+				GameStartWidget->RemoveFromParent();
+			}
 			MoveActor();
 			break;
+
+		case EGameStep::RoundEnd:
+
+			if (!GameEndWidget->IsInViewport())
+			{
+				GameEndWidget->AddToViewport();
+			}
+
 		default:
 			break;
 		}
@@ -115,6 +173,21 @@ void AAAFPlayerController::Client_MoveActor_Implementation()
 void AAAFPlayerController::Server_MoveActor_Implementation()
 {
 	Client_MoveActor();
+
+	if(HasAuthority())
+	{
+		APawn* thisPawn = GetPawn();
+
+		if (thisPawn)
+		{
+			if (CastPlayerState)
+			{
+				FVector NewLocation = CastPlayerState->Location;
+				thisPawn->SetActorLocation(NewLocation);
+				UE_LOG(LogTemp, Error, TEXT("ActorMove : %f, %f, %f"), NewLocation.X, NewLocation.Y, NewLocation.Z);
+			}
+		}
+	}
 }
 
 

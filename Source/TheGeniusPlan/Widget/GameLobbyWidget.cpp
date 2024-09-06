@@ -11,5 +11,5 @@ void UGameLobbyWidget::ChangePlayerCount(int32 NewNumber)
 
 void UGameLobbyWidget::NativeConstruct()
 {
-	ChangePlayerCount(0);
+	ChangePlayerCount(1);
 }
